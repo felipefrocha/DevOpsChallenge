@@ -1,0 +1,301 @@
+{
+	"info": {
+		"_postman_id": "9fdb9d8f-afe1-4171-91be-2bf29232a4e1",
+		"name": "NiboApp",
+		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+	},
+	"item": [
+		{
+			"name": "/WeatherForecast sucesso",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"id": "d4b89606-e7fa-4eee-a454-c0a4e40e62bd",
+						"exec": [
+							"const Ajv = require(\"ajv\");",
+							"const ajv = new Ajv({logger: console});",
+							"const schema =  pm.collectionVariables.get('schema');",
+							"",
+							"pm.test(\"Código da resposta deve ser 200.\", function () {",
+							"  pm.response.to.be.ok;",
+							"});",
+							"",
+							"pm.test(\"Deve ser retornado uma resposta no body\", function() {",
+							"  pm.response.to.be.withBody;",
+							"});",
+							"",
+							"pm.test(\"Informações contidas no body devem estar de acordo com o schema.\", function() {",
+							"  const res = JSON.parse(responseBody);",
+							"  const valid = ajv.validate(schema, res);",
+							"  !valid && console.error(ajv.errors);",
+							"  pm.expect(valid).to.be.true;",
+							"});",
+							"",
+							"pm.test('O Tamanho do payload deve ser', function() {",
+							"  var res = JSON.parse(responseBody);",
+							"  pm.expect(res.length).to.be.eql(5);",
+							"});",
+							"",
+							"pm.test('O corpo da resposta não deve ser vazio.', function() {",
+							"  var res = JSON.parse(responseBody);",
+							"  pm.expect(res.resultado !== null).to.be.true;",
+							"});",
+							"",
+							""
+						],
+						"type": "text/javascript"
+					}
+				}
+			],
+			"request": {
+				"method": "GET",
+				"header": [],
+				"url": {
+					"raw": "{{url}}/WeatherForecast",
+					"host": [
+						"{{url}}"
+					],
+					"path": [
+						"WeatherForecast"
+					]
+				},
+				"description": "Schema and response validation"
+			},
+			"response": []
+		}
+	],
+	"event": [
+		{
+			"listen": "prerequest",
+			"script": {
+				"id": "620c73c8-ac37-4fd3-bba4-3922f3f28164",
+				"type": "text/javascript",
+				"exec": [
+					"const schema = {",
+					"    \"$schema\": \"http://json-schema.org/draft-07/schema\",",
+					"    \"$id\": \"http://example.com/example.json\",",
+					"    \"type\": \"array\",",
+					"    \"title\": \"The root schema\",",
+					"    \"description\": \"The root schema comprises the entire JSON document.\",",
+					"    \"default\": [],",
+					"    \"examples\": [",
+					"        [",
+					"            {",
+					"                \"date\": \"2020-11-14T01:51:58.8266967-03:00\",",
+					"                \"temperatureC\": -13,",
+					"                \"temperatureF\": 9,",
+					"                \"summary\": \"Cool\"",
+					"            },",
+					"            {",
+					"                \"date\": \"2020-11-15T01:51:58.8268651-03:00\",",
+					"                \"temperatureC\": 16,",
+					"                \"temperatureF\": 60,",
+					"                \"summary\": \"Sweltering\"",
+					"            }",
+					"        ]",
+					"    ],",
+					"    \"additionalItems\": true,",
+					"    \"items\": {",
+					"        \"$id\": \"#/items\",",
+					"        \"anyOf\": [",
+					"            {",
+					"                \"$id\": \"#/items/anyOf/0\",",
+					"                \"type\": \"object\",",
+					"                \"title\": \"The first anyOf schema\",",
+					"                \"description\": \"An explanation about the purpose of this instance.\",",
+					"                \"default\": {},",
+					"                \"examples\": [",
+					"                    {",
+					"                        \"date\": \"2020-11-14T01:51:58.8266967-03:00\",",
+					"                        \"temperatureC\": -13,",
+					"                        \"temperatureF\": 9,",
+					"                        \"summary\": \"Cool\"",
+					"                    }",
+					"                ],",
+					"                \"required\": [",
+					"                    \"date\",",
+					"                    \"temperatureC\",",
+					"                    \"temperatureF\",",
+					"                    \"summary\"",
+					"                ],",
+					"                \"properties\": {",
+					"                    \"date\": {",
+					"                        \"$id\": \"#/items/anyOf/0/properties/date\",",
+					"                        \"type\": \"string\",",
+					"                        \"title\": \"The date schema\",",
+					"                        \"description\": \"An explanation about the purpose of this instance.\",",
+					"                        \"default\": \"\",",
+					"                        \"examples\": [",
+					"                            \"2020-11-14T01:51:58.8266967-03:00\"",
+					"                        ]",
+					"                    },",
+					"                    \"temperatureC\": {",
+					"                        \"$id\": \"#/items/anyOf/0/properties/temperatureC\",",
+					"                        \"type\": \"integer\",",
+					"                        \"title\": \"The temperatureC schema\",",
+					"                        \"description\": \"An explanation about the purpose of this instance.\",",
+					"                        \"default\": 0,",
+					"                        \"examples\": [",
+					"                            -13",
+					"                        ]",
+					"                    },",
+					"                    \"temperatureF\": {",
+					"                        \"$id\": \"#/items/anyOf/0/properties/temperatureF\",",
+					"                        \"type\": \"integer\",",
+					"                        \"title\": \"The temperatureF schema\",",
+					"                        \"description\": \"An explanation about the purpose of this instance.\",",
+					"                        \"default\": 0,",
+					"                        \"examples\": [",
+					"                            9",
+					"                        ]",
+					"                    },",
+					"                    \"summary\": {",
+					"                        \"$id\": \"#/items/anyOf/0/properties/summary\",",
+					"                        \"type\": \"string\",",
+					"                        \"title\": \"The summary schema\",",
+					"                        \"description\": \"An explanation about the purpose of this instance.\",",
+					"                        \"default\": \"\",",
+					"                        \"examples\": [",
+					"                            \"Cool\"",
+					"                        ]",
+					"                    }",
+					"                },",
+					"                \"additionalProperties\": true",
+					"            }",
+					"        ]",
+					"    }",
+					"}",
+					"",
+					"pm.collectionVariables.set('schema',schema);"
+				]
+			}
+		},
+		{
+			"listen": "test",
+			"script": {
+				"id": "9f79a95b-e500-4d7a-b6e2-73f4728cfbf0",
+				"type": "text/javascript",
+				"exec": [
+					""
+				]
+			}
+		}
+	],
+	"variable": [
+		{
+			"id": "6b961718-405b-4e24-9560-04e09c6d7b23",
+			"key": "url",
+			"value": "http://{{ip}}:{{port}}"
+		},
+		{
+			"id": "c5483a94-618a-4326-9b89-80dffc62f49f",
+			"key": "ip",
+			"value": "172.50.0.2"
+		},
+		{
+			"id": "443bb9bd-0048-48b9-bc1a-4a1b0825fac0",
+			"key": "port",
+			"value": "5000"
+		},
+		{
+			"id": "76b77a87-33fd-4ae5-a9b3-49bbf43ef4ee",
+			"key": "schema",
+			"value": {
+				"$id": "http://example.com/example.json",
+				"$schema": "http://json-schema.org/draft-07/schema",
+				"additionalItems": true,
+				"default": [],
+				"description": "The root schema comprises the entire JSON document.",
+				"examples": [
+					[
+						{
+							"date": "2020-11-14T01:51:58.8266967-03:00",
+							"summary": "Cool",
+							"temperatureC": -13,
+							"temperatureF": 9
+						},
+						{
+							"date": "2020-11-15T01:51:58.8268651-03:00",
+							"summary": "Sweltering",
+							"temperatureC": 16,
+							"temperatureF": 60
+						}
+					]
+				],
+				"items": {
+					"$id": "#/items",
+					"anyOf": [
+						{
+							"$id": "#/items/anyOf/0",
+							"additionalProperties": true,
+							"default": {},
+							"description": "An explanation about the purpose of this instance.",
+							"examples": [
+								{
+									"date": "2020-11-14T01:51:58.8266967-03:00",
+									"summary": "Cool",
+									"temperatureC": -13,
+									"temperatureF": 9
+								}
+							],
+							"properties": {
+								"date": {
+									"$id": "#/items/anyOf/0/properties/date",
+									"default": "",
+									"description": "An explanation about the purpose of this instance.",
+									"examples": [
+										"2020-11-14T01:51:58.8266967-03:00"
+									],
+									"title": "The date schema",
+									"type": "string"
+								},
+								"summary": {
+									"$id": "#/items/anyOf/0/properties/summary",
+									"default": "",
+									"description": "An explanation about the purpose of this instance.",
+									"examples": [
+										"Cool"
+									],
+									"title": "The summary schema",
+									"type": "string"
+								},
+								"temperatureC": {
+									"$id": "#/items/anyOf/0/properties/temperatureC",
+									"default": 0,
+									"description": "An explanation about the purpose of this instance.",
+									"examples": [
+										-13
+									],
+									"title": "The temperatureC schema",
+									"type": "integer"
+								},
+								"temperatureF": {
+									"$id": "#/items/anyOf/0/properties/temperatureF",
+									"default": 0,
+									"description": "An explanation about the purpose of this instance.",
+									"examples": [
+										9
+									],
+									"title": "The temperatureF schema",
+									"type": "integer"
+								}
+							},
+							"required": [
+								"date",
+								"temperatureC",
+								"temperatureF",
+								"summary"
+							],
+							"title": "The first anyOf schema",
+							"type": "object"
+						}
+					]
+				},
+				"title": "The root schema",
+				"type": "array"
+			}
+		}
+	],
+	"protocolProfileBehavior": {}
+}

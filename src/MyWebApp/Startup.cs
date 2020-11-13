@@ -10,15 +10,19 @@ using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging;
+using Microsoft.Extensions.Diagnostics.HealthChecks;
+using Microsoft.AspNetCore.Diagnostics.HealthChecks;
 
 namespace MyWebApp
 {
     public class Startup
     {
-        public Startup(IConfiguration configuration)
+        public Startup(IConfiguration configuration, IWebHostEnvironment appEnv)
         {
             Configuration = configuration;
+            Environment= appEnv;
         }
+        private IWebHostEnvironment Environment{ get; set; }
 
         public IConfiguration Configuration { get; }
 
@@ -26,6 +30,7 @@ namespace MyWebApp
         public void ConfigureServices(IServiceCollection services)
         {
             services.AddControllers();
+            services.AddHealthChecks();
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
@@ -34,9 +39,12 @@ namespace MyWebApp
             if (env.IsDevelopment())
             {
                 app.UseDeveloperExceptionPage();
+            }else
+            {
+                app.UseExceptionHandler("/Error");
+                app.UseHsts();
             }
 
-            app.UseHttpsRedirection();
 
             app.UseRouting();
 
@@ -45,6 +53,14 @@ namespace MyWebApp
             app.UseEndpoints(endpoints =>
             {
                 endpoints.MapControllers();
+                if (env.IsDevelopment())
+                {
+                    endpoints.MapHealthChecks("/healthDev");
+                }else
+                {
+                 endpoints.MapHealthChecks("/healthPrd");
+                }
+          
             });
         }
     }

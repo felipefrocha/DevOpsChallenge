@@ -28,17 +28,18 @@ O desafio consiste em criar um ambiente de produção no Azure pronto para receb
 Você deverá criar um fork deste repositório e utilizar o projeto contido na pasta `SRC` para completar o desafio.
 
 ### Requisitos:
-- [ ] Criar uma conta gratuita no [Azure](https://azure.microsoft.com/pt-br/free/)
-- [ ] Configurar o Azure para dois ambientes: Teste e Produção
-- [ ] Configurar pipeline para integração e deploy contínuo usando o Github Actions ou [Azure DevOps](https://azure.microsoft.com/en-us/services/devops/)
+- [x] Criar uma conta gratuita no [Azure](https://azure.microsoft.com/pt-br/free/)
+- [x] Configurar o Azure para dois ambientes: Teste e Produção
+- [x] Configurar pipeline para integração e deploy contínuo usando o Github Actions ou [Azure DevOps](https://azure.microsoft.com/en-us/services/devops/)
     - Uma das etapas obrigatórias deve rodar os testes unitários
     - O deploy deve ser realizado automaticamente no ambiente de testes e no ambiente de produção, seguindo o [Github Flow](https://guides.github.com/introduction/flow/)
+    - O Pipeline deve considerar pelo menos um teste de integração [Postman](/Postman/app)
     - O deploy deverá ser feito na sua conta Azure nos ambientes que você criou\
-- [ ] Criar um arquivo chamado `howto.md` explicando o que e como foi feito, além das URLs e instruções de como verificar o resultado
+- [x] Criar um arquivo chamado [`howto.md`](HOWTO.md) explicando o que e como foi feito, além das URLs e instruções de como verificar o resultado
 
 ### Atividades extras:
-- [ ] Configurar um endpoint na aplicação para servir como Healthcheck e configurar este endpoint no Azure para geração de estatísticas de disponibilidade.
-- [ ] Colocar a aplicação em um Docker container
+- [x] Configurar um endpoint na aplicação para servir como Healthcheck e configurar este endpoint no Azure para geração de estatísticas de disponibilidade.
+- [x] Colocar a aplicação em um Docker container
 
 
 ## Envio da solução
