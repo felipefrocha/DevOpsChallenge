@@ -1,0 +1,108 @@
+name: .NET Core
+
+on:
+  push:
+    branches: 
+    - master
+    - develop
+  pull_request:
+    branches: [ master ]
+
+jobs:
+
+
+  deploy-infra:
+
+    runs-on: ubuntu-latest
+    env:
+      ARM_TENANT_ID: ${{secrets.ARM_TENANT_ID}}
+      ARM_SUBSCRIPTION_ID: ${{secrets.ARM_SUBSCRIPTION_ID}}
+      ARM_CLIENT_ID: ${{secrets.ARM_CLIENT_ID}}
+      ARM_CLIENT_SECRET: ${{secrets.ARM_CLIENT_SECRET}}
+
+
+    steps:
+
+    - uses: actions/checkout@v2
+
+    - name: Extract branch name
+      run: |
+        BRANCH=$(echo ${GITHUB_REF#refs/heads/})
+        echo $BRANCH
+        if [[ $BRANCH == "master" ]]; then PROFILE='prd'; else PROFILE='dev'; fi
+        echo "##[set-output name=profile;]$(echo $PROFILE)"
+      id: extract_branch
+
+    - name: Login azure
+      run: |
+        az login --service-principal -u ${{secrets.ARM_CLIENT_ID}} -p ${{secrets.ARM_CLIENT_SECRET}} --tenant ${{secrets.ARM_TENANT_ID}}
+
+    - name: Terraform Init
+      run: cd terraform  && terraform init -backend-config=dev.backend.tfvars
+
+
+    - name: Terraform Select
+      run: cd terraform  && terraform workspace select ${{steps.extract_branch.outputs.profile}}
+
+
+    - name: Terraform Verify
+      run: cd terraform  && terraform validate
+
+
+    - name: Terraform Plan
+      run: cd terraform  && terraform plan -var="docker_username=${{secrets.DOCKER_USER}}" -var="docker_passwd=${{secrets.DOCKER_PASSWD}}" -out plan.tfplan
+
+
+    - name: Terraform Apply
+      run: cd terraform  && terraform apply "plan.tfplan"
+      
+
+  build:
+
+    runs-on: ubuntu-latest
+
+    steps:
+    - uses: actions/checkout@v2
+
+
+    - name: Extract branch name
+      run: |
+        BRANCH=$(echo ${GITHUB_REF#refs/heads/})
+        echo $BRANCH
+        if [[ $BRANCH == "master" ]]; then PROFILE='prd'; else PROFILE='dev'; fi
+        echo "##[set-output name=profile;]$(echo $PROFILE)"
+        echo 'Profile é '$PROFILE
+        echo running on branch ${GITHUB_REF##*/}
+      id: extract_branch
+
+    - name: Build
+      run: docker build -t ${{secrets.DOCKER_USER}}/niboapi --target builder .
+
+
+    - name: Test
+      run: docker build -t ${{secrets.DOCKER_USER}}/niboapi --target tester .
+
+
+    - name: Release
+      run: docker build -t ${{secrets.DOCKER_USER}}/niboapi --target releaser .
+
+    - name: Integration Test over
+      run: |
+        sed -i -e 's|##USER##|${{secrets.DOCKER_USER}}|g' .env
+        sed -i -e 's|##PROFILE##|${{steps.extract_branch.outputs.profile}}|g' .env
+        sed -i -e 's|##PROFILE##|${{steps.extract_branch.outputs.profile}}|g' postman/NiboApp.postman_collection.json
+        if docker-compose -f docker-compose.yml up --exit-code-from postman; then
+          echo "Sucess"
+          exit 0
+        else
+          docker-compose logs app
+          docker-compose logs postman
+          exit 1
+        fi;
+
+    - name: Docker Login
+      run: echo "${{secrets.DOCKER_PASSWD}}" | docker login -u ${{secrets.DOCKER_USER}} --password-stdin
+
+    - name: Docker Deploy
+      run: docker push ${{secrets.DOCKER_USER}}/niboapi
+      

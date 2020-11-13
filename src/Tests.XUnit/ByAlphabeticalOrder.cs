@@ -21,7 +21,7 @@ namespace XUnit.Project
         [Fact]
         public void Test2()
         {
-            Test2Called = true;
+            Test1Called = true;
 
             Assert.True(Test1Called);
             Assert.False(Test3Called);
@@ -30,10 +30,10 @@ namespace XUnit.Project
         [Fact]
         public void Test3()
         {
-            Test3Called = true;
+            Test1Called = true;
 
             Assert.True(Test1Called);
-            Assert.True(Test2Called);
+            Assert.True(Test1Called);
         }
     }
 }
